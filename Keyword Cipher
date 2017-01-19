@@ -1,0 +1,54 @@
+/*
+Basic keyword cipher function.  It can take a word or phrase (all letters) separated by spaces, 
+then encrypt it using a keyword.  Function is written in JavaScript, but fairly easy to convert
+from there to Java, Python or any other language of one's choosing.
+*/
+
+function keyword_cipher(message, key) {
+  
+  // Work in lower case for simplicity.
+  key = key.toLowerCase();
+  message = message.toLowerCase();
+  
+  // create deciphered string variable
+  var encrypt = "";
+  
+  // create the master and ciphered lists.
+  var masterList = "abcdefghijklmnopqrstuvwxyz";
+  var cipherList = "abcdefghijklmnopqrstuvwxyz";
+  var keyArr = [];
+  
+  // Algorithm to incorporate key into cipherList
+  for (var i=0; i<key.length; i++) {
+    if(cipherList.includes(key.charAt(i))) {
+      var letter = key.charAt(i);
+      var index = cipherList.indexOf(letter);
+      cipherList.replace(letter, "");
+      var str1 = cipherList.substring(0, index);
+      var str2 = cipherList.substring(index+1, cipherList.length);
+      cipherList = str1 + str2;
+    }
+    
+    if (!keyArr.includes(key.charAt(i))) {
+      keyArr.push(key.charAt(i));
+    }
+    
+  }
+  key = keyArr.join('');
+  cipherList = key + cipherList;
+  
+  // Algorithm to decipher a word
+  for (var j=0; j<message.length; j++) {
+    if (message.charCodeAt(j)<97 || message.charCodeAt(j)>123) {
+      encrypt +=message.charAt(j);
+    }
+     else {
+      var index = masterList.indexOf(message.charAt(j));
+      encrypt += cipherList.charAt(index);
+     }
+  }
+  
+  return encrypt;
+}
+
+keyword_cipher("welcome home", "secret");
