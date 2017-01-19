@@ -1,0 +1,29 @@
+function songDecoder(song){
+  var songStr = "";
+  for (var i=0; i<song.length; i++) {
+    // 'WUB' appears at start of song string
+    if ((song.substring(i,i+3)==="WUB") && (i===0)) {
+      i += 2;
+    }
+    // 'WUB' appears at end of song string
+    else if (song.substring(i,song.length)==="WUB") {
+      break;
+    }
+    // multiple instances of 'WUB'
+    else if (((song.substring(i,i+3)==="WUB") && (song.substring(i+3,i+6)==="WUB"))) {
+      i += 2;
+    }
+     // Single instance of 'WUB'
+    else if ((song.substring(i,i+3)==="WUB") && (song.substring(i+3,i+6)!=="WUB")) {
+      songStr += " ";
+      i += 2;
+    }
+   // Characters not associated with 'WUB'
+    else {
+      songStr += song.charAt(i);
+    }
+  }
+  if (songStr.charAt(0) === " ") songStr = songStr.substring(1, songStr.length);
+  else if (songStr.charAt(songStr.length-1) === " ") songStr = songStr.substring(0, songStr.length-1);
+  return songStr;
+}
