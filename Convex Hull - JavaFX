@@ -1,0 +1,260 @@
+* NOTES: Again using the JavaFX GUI, the program allows a user to enter a series
+ * of point about a plane and can dynamically create a convex hull to contain all
+ * the entered points, if there are at least three displayed, using Graham's Algorithm.
+ */
+import javafx.application.Application;
+import javafx.geometry.Point2D;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
+
+import java.util.*;
+import static javafx.application.Application.launch;
+import javafx.scene.input.MouseButton;
+
+public class ConvexHull extends Application {
+
+    private ArrayList<Point2D> points = new ArrayList<Point2D>();
+    private ArrayList<Point2D> hullPoints = new ArrayList<Point2D>();
+    private ArrayList<Circle> circles = new ArrayList<Circle>();
+    private ArrayList<Line> lines = new ArrayList<Line>();
+    
+    Pane pointPane = new Pane();
+
+    @Override
+    public void start(Stage primaryStage) {
+
+        //BorderPane borderPane = new BorderPane();
+        //borderPane.getChildren().add(pointPane);
+        //borderPane.setAlignment(pointPane, Pos.CENTER);
+        pointPane.setStyle("-fx-border-color: black");
+        pointPane.setOnMouseClicked(e -> {
+            
+            if (e.getButton() == MouseButton.PRIMARY) {
+                
+                addPoint(pointPane, e.getX(), e.getY());
+                
+                if (points.size() >= 3) {
+                    hullPoints = getConvexHull(points);
+                    for (int i = 0; i < lines.size(); i++) {
+                        pointPane.getChildren().remove(lines.get(i));
+                    }
+                    lines.clear();
+                    getPerimeter();
+                } 
+            }
+            
+            else if (e.getButton() == MouseButton.SECONDARY) {
+                
+                double targetX = e.getX();
+                double targetY = e.getY();
+                int index = 0;
+                
+                for (int i = 0; i < points.size(); i++) {
+                    if (targetX < (points.get(i).getX() + 8) && targetX > 
+                            (points.get(i).getX() - 8) && targetY < 
+                            (points.get(i).getY() + 8) && targetY > 
+                            (points.get(i).getY() - 8)) {
+                        
+                        index = i;
+                        pointPane.getChildren().remove(circles.get(index));
+                        circles.remove(index);
+                        points.remove(index);
+                        
+                    }
+                } 
+                
+                if (points.size() >= 3) {
+                    hullPoints = getConvexHull(points);
+                    for (int i = 0; i < lines.size(); i++) {
+                        pointPane.getChildren().remove(lines.get(i));
+                    }
+                    lines.clear();
+                    getPerimeter();
+                }
+                
+                else {
+                    for (int i = 0; i < lines.size(); i++) {
+                        pointPane.getChildren().remove(lines.get(i));
+                    }
+                    lines.clear();
+                }
+            }
+        });
+        
+        Rectangle instructionRec = new Rectangle(15, 15, 200, 65);
+        instructionRec.setFill(Color.YELLOW);
+        instructionRec.setStroke(Color.BLACK);
+        
+        Text text = new Text("INSTRUCTIONS: \rLeft Click to add a point \rRight Click to delete a point");
+        text.setX(20);
+        text.setY(30);
+        text.setFont(Font.font("Times New Roman"));
+        pointPane.getChildren().addAll(instructionRec, text);
+
+        Scene scene = new Scene(pointPane, 800, 600);
+        primaryStage.setTitle("Exercise 22.13");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+    }
+
+    public static void main(String[] args) {
+
+        launch(args);
+
+    }
+
+    // Adds a new Point2D point to an array list when invoked.
+    public void addPoint(Pane pane, double pointX, double pointY) {
+
+        points.add(new Point2D(pointX, pointY));
+        addCircle(points.get(points.size() - 1));
+
+    }
+
+    //  Method adds a circle over a specific Point2D point.
+    public void addCircle(Point2D point) {
+
+        Circle newCircle = new Circle(point.getX(), point.getY(), 8);
+        circles.add(newCircle);
+        pointPane.getChildren().add(circles.get(circles.size() - 1));
+        
+    }
+
+    //  Method removes a circle from the display pane.
+    public void removeCircleFX(Circle circle, Pane pane) {
+
+        pane.getChildren().remove(circle);
+
+    }
+    
+    public void getPerimeter() {
+        for (int i = 0; i < hullPoints.size(); i++) {
+            if (i < hullPoints.size() - 1) {
+                lines.add(new Line(hullPoints.get(i).getX(), hullPoints.get(i).getY(), hullPoints.get(i + 1).getX(), hullPoints.get(i + 1).getY()));
+                pointPane.getChildren().add(lines.get(i));
+            }
+            
+            else {
+                lines.add(new Line(hullPoints.get(i).getX(), hullPoints.get(i).getY(), hullPoints.get(0).getX(), hullPoints.get(0).getY()));
+                pointPane.getChildren().add(lines.get(i));
+            }
+        }
+    }
+
+    public ArrayList<Point2D> getConvexHull(ArrayList<Point2D> s) {
+
+    // For efficiency, create an array of objects
+        Point2D[] myPoints = new Point2D[s.size()];
+
+        for (int i = 0; i < myPoints.length; i++) {
+            myPoints[i] = new Point2D(s.get(i).getX(), s.get(i).getY());
+        }
+
+    // Step 1
+        Point2D h0 = getRightmostLowestPoint(myPoints);
+
+        ArrayList<Point2D> H = new ArrayList<>();
+
+        H.add(h0);
+
+        Point2D t0 = h0;
+
+    // Step 2 and Step 3
+        while (true) {
+
+      // Step 2
+            Point2D t1 = myPoints[0]; // Let t1 be s0
+
+            for (int i = 1; i < myPoints.length; i++) {
+
+                double status = whichSide(t0.getX(), t0.getY(),
+                        t1.getX(), t1.getY(), myPoints[i].getX(), myPoints[i].getY());
+
+                if (status > 0) // Right side of the line. Please note we are using the Java coordinate system. y increases downward
+                {
+                    t1 = myPoints[i];
+                } else if (status == 0) {
+
+                    if (distance(s.get(i).getX(), s.get(i).getY(), t0.getX(), t0.getY()) > distance(t1.getX(), t1.getY(), t0.getX(), t0.getY())) {
+                        t1 = myPoints[i];
+                    }
+
+                }
+
+            }
+
+      // Step 3
+            if (t1.equals(h0)) // (t1.getX() == h0.getX() && t1.getY() == h0.getY())
+            {
+                break; // A convex hull is found
+            } else {
+
+                H.add(t1);
+
+                t0 = t1;
+
+            }
+
+        }
+
+        return H;
+
+    }
+
+    /**
+     * Return the rightmost lowest point in S
+     */
+    private Point2D getRightmostLowestPoint(Point2D[] p) {
+
+        int rightMostIndex = 0;
+
+        double rightMostX = p[0].getX();
+
+        double rightMostY = p[0].getY();
+
+        for (int i = 1; i < p.length; i++) {
+
+            if (rightMostY < p[i].getY()) {
+
+                rightMostY = p[i].getY();
+
+                rightMostX = p[i].getX();
+
+                rightMostIndex = i;
+
+            } else if (rightMostY == p[i].getY() && rightMostX < p[i].getX()) {
+
+                rightMostX = p[i].getX();
+
+                rightMostIndex = i;
+
+            }
+
+        }
+
+        return p[rightMostIndex];
+
+    }
+
+    public double distance(double x1, double y1, double x2, double y2) {
+
+        return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+
+    }
+
+    double whichSide(double x0, double y0, double x1, double y1,
+            double x2, double y2) {
+
+        return (x1 - x0) * (y2 - y0) - (x2 - x0) * (y1 - y0);
+
+    }
+
+}
