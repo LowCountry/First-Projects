@@ -1,6 +1,8 @@
 /**
- * This is a modified form of the Sierpinski Triangle adapted to be controlled 
- * by two buttons, which control the order of the Sierpinski Triangle.
+ * This is a simple recursive fractal which can be rendered
+ * easily by JavaFX.  This is a modified form of the Sierpinski Triangle,
+ * adapted to be controlled by two buttons, which allow the user to increase or 
+ * decrease the order of the Sierpinski Triangle.
  */
 
 import javafx.application.Application;
@@ -10,18 +12,21 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 
-public class SierpinskiTriangle extends Application {
+public class Sierpinski_Triangle extends Application{
     
     @Override
     public void start(Stage primaryStage) {
         
         SierpinskiTrianglePane trianglePane = new SierpinskiTrianglePane();
+        trianglePane.setLayoutX(480);
+        trianglePane.setLayoutY(600);
         TextField tfOrder = new TextField();
         tfOrder.setOnAction(e -> trianglePane.setOrder(Integer.parseInt(tfOrder.getText())));
         tfOrder.setPrefColumnCount(4);
@@ -31,6 +36,7 @@ public class SierpinskiTriangle extends Application {
         Modify the contents of the hBox to contain two new buttons.
         */
         HBox hBox = new HBox(10);
+        Label controlLabel = new Label("INCREASE OR DECREASE THE ORDER OF THE TRIANGLE");
         Button posButton = new Button("+");
         Button negButton = new Button("-");
         negButton.setDisable(true);
@@ -51,15 +57,15 @@ public class SierpinskiTriangle extends Application {
                 });
         
         //hBox.getChildren().addAll(new Label("Enter an Order: "), tfOrder);
-        hBox.getChildren().addAll(negButton, posButton);
+        hBox.getChildren().addAll(controlLabel, negButton, posButton);
         hBox.setAlignment(Pos.CENTER);
         
         BorderPane borderPane = new BorderPane();
         borderPane.setCenter(trianglePane);
         borderPane.setBottom(hBox);
         
-        Scene scene = new Scene(borderPane, 200, 210);
-        primaryStage.setTitle("Exercise 18.19 (Serpinski Triangle)");
+        Scene scene = new Scene(borderPane, 600, 610);
+        primaryStage.setTitle("Serpinski Triangle");
         primaryStage.setScene(scene);
         primaryStage.show();
         
@@ -148,3 +154,4 @@ class SierpinskiTrianglePane extends Pane {
         }
         
     }
+
