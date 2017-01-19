@@ -1,0 +1,346 @@
+/**
+ * Project: KochSnowflake 
+ * Version: 1.0 
+ * Date: May 26, 2016 
+ * Author: BugSmasher
+ * Requirement: Personal Experience
+ */
+
+/**
+ *
+ ******************************* NOTES ****************************************
+ * 
+ * This is a test program which creates a Koch Snowflake fractal pattern from a
+ * single equilateral triangle (fractal order 0) using JavaFX as the display
+ * medium and GUI control.
+ * 
+ * This program will be executed in three separate and distinct phases. Phase I
+ * will be a refresher on writing Java code in an IDE as well as using JavaFX to
+ * lay out all the display panes and necessary GUI to create the Koch Snowflake
+ * fractal of order 0. The second phase will be the development of the recursive
+ * methods to create the recursive method which generated the points of the
+ * fractal from an existing line segment of the order 0 triangle. The final
+ * stage will be to implement all the interactivity to allow a user to control
+ * the program via the JavaFX GUI on the display stage.
+ */
+/**
+ * We first need to import all of the required JavaFX functions which will will
+ * create and display all of the graphic, stage, and GUI elements of the
+ * program.
+ */
+import javafx.application.Application;
+import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Line;
+import javafx.stage.Stage;
+import static javafx.application.Application.launch;
+
+/**
+ * The class KochSnowflake creates all the needed elements for the program to
+ * run from classes in existing JavaFX libraries and custom classes listed
+ * below, then displays and runs them in a separate window (stage).
+ */
+public class KochSnowflake extends Application {
+
+    // Construct the method to run this JavaFX application.
+    @Override
+    public void start(Stage primaryStage) {
+
+        // Construct all the required objects for the program 
+        KochSnowflakePane snowflakePane = new KochSnowflakePane();
+        TextField theOrder = new TextField();
+        Label label = new Label("Change the order of the Koch Snowflake Fractal");
+        HBox hBox = new HBox(10);
+        VBox controlBox = new VBox(10);
+        BorderPane borderPane = new BorderPane();
+        Scene scene = new Scene(borderPane, 900, 900);
+        Button decBtn = new Button("<");
+        Button incBtn = new Button(">");
+        
+        /**
+         * This space is reserved for interactivity code for JavaFX, which will
+         * be added later on.
+         *
+         *
+         *
+         *
+         */
+        
+        /**
+         * make adjustments to the existing JavaFX elements using their methods
+         * as needed and assemble them on borderPane.
+         */
+        hBox.getChildren().addAll(label, decBtn, incBtn, theOrder);
+        hBox.setAlignment(Pos.CENTER);
+        borderPane.setCenter(snowflakePane);
+        borderPane.setBottom(hBox);
+        theOrder.setText("0");
+        theOrder.setEditable(false);
+        decBtn.setDisable(true);
+        
+        /**
+         * Allow the decBtn and incBtn buttons to control the order of the
+         * KochSnowflakePane object.
+        */
+        decBtn.setOnAction(e -> {
+            // Set the order of the fractal
+            snowflakePane.setOrder(snowflakePane.getOrder() - 1);
+            // Paint the snowflakePane to the fracalization corresponding with
+            // the order of the fractal.
+            snowflakePane.paint();
+            // Conditional to prevent a negative order value from being introduced.
+            theOrder.setText(Integer.toString(snowflakePane.getOrder()));
+                if (snowflakePane.getOrder() == 0) {
+                    decBtn.setDisable(true);
+                    }
+                else {
+                    decBtn.setDisable(false);
+                    }
+        });
+ 
+        incBtn.setOnAction(e -> {
+            // Set the order of the fractal
+            snowflakePane.setOrder(snowflakePane.getOrder() + 1);
+            // Paint the snowflakePane to the fracalization corresponding with
+            // the order of the fractal.
+            snowflakePane.paint();
+            // Conditional to prevent a negative order value from being introduced.
+            theOrder.setText(Integer.toString(snowflakePane.getOrder()));
+                if (snowflakePane.getOrder() == 0) {
+                    decBtn.setDisable(true);
+                    }
+                else {
+                    decBtn.setDisable(false);
+                    }
+        });
+        
+        /**
+         * Finally assemble and display the scene on the stage.
+         */
+        primaryStage.setTitle("Koch Snowflake");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+    }
+
+    // This is a generic start method to launch the program
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+}
+
+/**
+ * This class creates a subclass of the Pane class called KochSnowflakePane,
+ * which creates and displays the Koch Snowflake.
+ */
+class KochSnowflakePane extends Pane {
+
+    // There must be an interger variable for the order of the fractal.
+    private int order = 0;
+
+    // Getters and setters the value of order.
+    public int getOrder() {
+        return this.order;
+    }
+    
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
+    // Default no-arg constructor.
+    KochSnowflakePane() {
+        this.setPrefSize(800, 800);
+        paint();
+    }
+
+    /**
+     * Create the method which will display the fractal based upon the given
+     * order. To begin with it will create a simple triangle, with the recursive
+     * method for generating points added later.
+     */
+    protected void paint() {
+
+        //Create the points the make up the baseof the equilateral triangle.
+        
+        Point2D p1 = new Point2D(750, 525);
+        Point2D p2 = new Point2D(150, 525);
+        
+        Point2D p4 = new Point2D((750-50*Math.sqrt(3)), 475);
+        Point2D p5 = new Point2D((150+50*Math.sqrt(3)), 475);
+        
+        //Now create the third vertex.
+        Point2D p3 = tipPoint(p1, p2);
+        Point2D p6 = tipPoint(p4, p5);
+
+        // Clear the pane SnowflakePane.
+        this.getChildren().clear();
+        
+        /**
+         * This section draws the triangle and recursively creates additional
+         * points based upon the magnitude of the property order.
+         */
+        
+        // Base Case
+        if (this.order == 0) {
+            Line line13 = new Line(p1.getX(), p1.getY(), p3.getX(), p3.getY());
+            Line line32 = new Line(p3.getX(), p3.getY(), p2.getX(), p2.getY());
+            Line line21 = new Line(p2.getX(), p2.getY(), p1.getX(), p1.getY());
+            
+            Line line46 = new Line(p4.getX(), p4.getY(), p6.getX(), p6.getY());
+            Line line65 = new Line(p6.getX(), p6.getY(), p5.getX(), p5.getY());
+            Line line54 = new Line(p5.getX(), p5.getY(), p4.getX(), p4.getY());
+            
+            this.getChildren().addAll(line13, line32, line21, line46, line65, 
+                    line54);
+        }
+        
+        // create triangle and add points recursively.
+         else {
+            Line line13 = new Line(p1.getX(), p1.getY(), p3.getX(), p3.getY());
+            Line line32 = new Line(p3.getX(), p3.getY(), p2.getX(), p2.getY());
+            Line line21 = new Line(p2.getX(), p2.getY(), p1.getX(), p1.getY());
+            
+            Line line46 = new Line(p4.getX(), p4.getY(), p6.getX(), p6.getY());
+            Line line65 = new Line(p6.getX(), p6.getY(), p5.getX(), p5.getY());
+            Line line54 = new Line(p5.getX(), p5.getY(), p4.getX(), p4.getY());
+            
+            this.getChildren().addAll(line13, line32, line21, line46, line65, 
+                    line54);
+            
+            createFractal(this.order, p1, p3, line13);
+            createFractal(this.order, p3, p2, line32);
+            createFractal(this.order, p2, p1, line21);
+            
+            createFractal(this.order, p4, p6, line46);
+            createFractal(this.order, p6, p5, line65);
+            createFractal(this.order, p5, p4, line54);
+           
+        }
+             
+    }
+    
+    //Here is the recursive fractal method.
+    private void createFractal(int order, Point2D p1, Point2D p2, Line line1) {
+        
+        /**
+         * In order to create the fractal point, we need to get the length of
+         * the line segment we wish to cut.
+        */
+        double lineLength = p1.distance(p2);
+        
+        /**
+         * Next, place points along the line segment such that it is divided up 
+         * into 3 sub-segments.
+         */
+        Point2D newPoint1 = dividingPoint(1, p1, p2);
+        Point2D newPoint2 = dividingPoint(2, p1, p2);
+        
+        /**
+         * Finally we create the third point to be used by means of additive 
+         * trigonometry.
+         */ 
+        Point2D newPoint3 = tipPoint(newPoint1, newPoint2);
+        
+        //Next we delete the old line segment line1 from the snowflakePane.
+        this.getChildren().remove(line1);
+        
+        /**And replace line1 with four new line segments and add them into
+         * the snowflakePane.  A tail-end recursive method is used to propagate 
+         * the recursion based on a conditional of the order size.
+         */
+        
+        // Base case
+        if (order == 1) {
+            
+            Line newLine1 = new Line(p1.getX(), p1.getY(), newPoint1.getX(), 
+                    newPoint1.getY());
+            Line newLine2 = new Line(newPoint1.getX(), newPoint1.getY(), 
+                    newPoint3.getX(), newPoint3.getY());
+            Line newLine3 = new Line(newPoint3.getX(), newPoint3.getY(), 
+                    newPoint2.getX(), newPoint2.getY());
+            Line newLine4 = new Line(newPoint2.getX(), newPoint2.getY(), 
+                    p2.getX(), p2.getY());
+            
+            this.getChildren().addAll(newLine1, newLine2, newLine3, newLine4);
+        }
+        
+        // Tail end Recursion
+        else {
+            
+            Line newLine1 = new Line(p1.getX(), p1.getY(), newPoint1.getX(), 
+                    newPoint1.getY());
+            Line newLine2 = new Line(newPoint1.getX(), newPoint1.getY(), 
+                    newPoint3.getX(), newPoint3.getY());
+            Line newLine3 = new Line(newPoint3.getX(), newPoint3.getY(), 
+                    newPoint2.getX(), newPoint2.getY());
+            Line newLine4 = new Line(newPoint2.getX(), newPoint2.getY(), 
+                    p2.getX(), p2.getY());
+            
+            this.getChildren().addAll(newLine1, newLine2, newLine3, newLine4);
+            
+            // Run the createFractal method recursively until the order equals 1
+            createFractal(order - 1, p1, newPoint1, newLine1);
+            createFractal(order - 1, newPoint1, newPoint3, newLine2);
+            createFractal(order - 1, newPoint3, newPoint2, newLine3);
+            createFractal(order - 1, newPoint2, p2, newLine4);
+        }
+       
+    }
+    
+    /**
+     *  This method creates a third vertex for a equilateral triangle based upon
+     *  two existing points for a base.
+     */
+    private Point2D tipPoint(Point2D p1, Point2D p2) {
+        
+        double hypotenuse = p1.distance(p2);
+        double dx = p2.getX()-p1.getX();
+        double dy = p2.getY()-p1.getY();
+        double dirX = dx / hypotenuse;
+        double dirY = dy / hypotenuse;
+        double height = (hypotenuse/2)*Math.sqrt(3);
+        
+        double hX = -1*dirY;
+        double hY = dirX;
+        
+        Point2D centerPoint = p1.midpoint(p2);
+        
+        double pointX = centerPoint.getX()+hX*height;
+        double pointY = centerPoint.getY()+hY*height;
+        
+        Point2D tipPoint = new Point2D(pointX, pointY);
+        
+        return tipPoint;
+        
+    }
+    
+    /**
+     * This method generates points along a line between two existing points
+     * whose distance from the starting point p1 are multiples of a third of the
+     * line's total length.
+     */
+    private Point2D dividingPoint(int ratio, Point2D p1, Point2D p2) {
+        
+        double length = p1.distance(p2);
+        double dx = p2.getX()-p1.getX();
+        double dy = p2.getY()-p1.getY();
+        double dirX = dx/length;
+        double dirY = dy/length;
+        
+        double pointX = p1.getX()+(ratio*length/3)*dirX;
+        double pointY = p1.getY()+(ratio*length/3)*dirY;
+        
+        Point2D dividingPoint = new Point2D(pointX, pointY);
+        return dividingPoint;
+    }
+
+}
