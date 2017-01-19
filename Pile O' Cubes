@@ -1,0 +1,15 @@
+function findNb(m) {
+    var cubes = 0;
+    var side = 0;
+    var volume = 0;
+    while (volume<m) {
+      volume += (side*side*side);
+      if (volume>=m) {
+        break;
+      }
+      side++;
+      cubes++;
+    }
+    if (Math.floor(volume)===m) return cubes;
+    else return (-1);
+}
