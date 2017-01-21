@@ -1,0 +1,20 @@
+function interpreter(tape, array) {
+  var selector = 0;
+  var arr = array.split('');
+  function controller(input){
+    if (input==="1") {
+      if(arr[selector]==="0") arr[selector]="1";
+      else if(arr[selector]==="1") arr[selector]="0";
+    }
+    else if (input==="0") {
+    selector++;
+    }
+  }
+  while (selector<=arr.length) {
+    for (var i=0; i<tape.length; i++) {
+      controller(tape.charAt(i));
+    }
+  }
+  array=arr.join('');
+  return array;
+}
