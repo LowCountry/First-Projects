@@ -1,0 +1,17 @@
+function oTannenbaum(a) {
+  function tannenbaum(a) {
+    var t = [];
+    var f = 0;
+    while (f < a) {
+      var pb = 2*f+1;
+      var sb = 2*a - pb;
+      t.push(" ".repeat(sb/2) + "*".repeat(pb) + " ".repeat(sb/2));
+      f++;
+    }
+    return t;
+  }
+  var ts = tannenbaum(a).reduce( (p, c) => p + "\r" + c);
+  ts += "\r" + " ".repeat((a)-2) + "||" + " ".repeat((a)-2);
+  alert(ts);
+  console.log(ts);
+}
