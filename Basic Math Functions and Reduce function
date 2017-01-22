@@ -1,0 +1,34 @@
+function gcdi(x,y) {
+    x = Math.abs(x); y = Math.abs(y);
+    var num = mini(x,y);
+    var gcd = 0;
+    while (num > 0) {
+      if (x%num===0 && y%num===0 && num > gcd) gcd = num;
+      num--;
+    } 
+    return gcd;
+}
+function lcmu(a, b) {
+    a = Math.abs(a); b = Math.abs(b);
+    var lcm = (a*b)/gcdi(a,b);
+    return lcm;
+}
+function som(a, b) {
+    return a+b;
+}
+function maxi(a, b) {
+    if (a > b) return a;
+    else return b;
+}
+function mini(a, b) {
+     if (a > b) return b;
+    else return a;
+}
+function operArray(fct, arr, init) {
+    var newArr=[];
+    for (var i=0; i<arr.length; i++) {
+      newArr.push(fct(arr[i], init));
+      init = newArr[i];
+    }
+    return newArr;
+}
