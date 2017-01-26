@@ -80,5 +80,3 @@ function pascalTriangle(num) {
   printTri(arr1);
   return arr1;
 }
-
-pascalTriangle(14);
