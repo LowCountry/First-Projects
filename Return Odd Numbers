@@ -1,0 +1,9 @@
+function returnOddNums(arr) {
+  // Internal fuction to check if a number is odd or even.
+  function returnOdd(num) {
+    if (num%2!==0) return num;
+  }
+  
+  // Return a new array using the filter() method
+  return arr.filter(returnOdd);
+}
