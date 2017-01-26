@@ -1,0 +1,84 @@
+function pascalTriangle(num) {
+  
+  // match description of rows with actual rows.
+  num ++;
+  
+  // Create an array of Pascal's Triangle numbers
+  function createArr(num) {
+    
+    // The array of Pascal's Triangle numbers
+    var newArr = [];  
+    
+    // Algorithm to popluate the array.
+    for (var i=0; i<num; i++) {
+      // New array which is new index in Pascal's Triangle array.
+      var indexArr = [];
+      // Topmost condition
+      if (i===0) {
+        indexArr.push(1);
+        newArr.push(indexArr);
+      }
+      
+      // All rows below this
+      else {
+        // Retrieve the array from the row above
+        k = newArr[i-1];
+        for (var j=0; j<k.length; j++) {
+          // Case where row above contains only one indice
+          if (k.length === 1) {
+            indexArr.push(1,1);
+            newArr.push(indexArr);
+          }
+          // Case where row above contains only two indices
+          else if (k.length===2) {
+            indexArr.push(2);
+            break;
+          }
+          // All other cases where row above contains three or more indices
+          else if (k.length > 2) {
+            if ((j+1)!==k.length) {
+              var newVal = k[j] + k[j+1];
+              indexArr.push(newVal);
+            }
+          }
+        }
+        
+        if (indexArr[0]>1) {
+          indexArr.push(1);
+          indexArr.unshift(1);
+          newArr.push(indexArr);
+        }
+      }
+    }
+    // Return the new array of Pascal's Triangle numbers
+    return newArr;
+  }
+  
+  // This function prints out the arrays in a triangular arrangement
+  function printTri(arr) {
+    
+    // Internal function to repeat white spaces
+    function repeat(char, num) {
+      var count = 0;
+      var string = "";
+      while (count <= num) {
+        string += char;
+        count++;
+      }
+      return string;
+    }
+    
+    // Print out the Pascal Triangle.
+    for (var i=0; i<arr.length; i++) {
+      var spacers = 2*num;
+      var a = arr[i].join(' ');
+      console.log(repeat(' ', (spacers-i)) + a + repeat(' ', (spacers-i)));
+    }
+    
+  }
+  var arr1 = createArr(num);
+  printTri(arr1);
+  return arr1;
+}
+
+pascalTriangle(14);
