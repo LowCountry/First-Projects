@@ -1,0 +1,46 @@
+function countSmileys(arr) {
+  
+  /*
+  Algorithm which determines if string is a smiley.  Must have only 2-3 characters and meet 
+  the following criteria.
+  */
+  function pickSmiley(a, cv, ci, ar) {
+    // String must have only 2-3 character max and first character can only be ':' or ';'
+    if ((cv.length ===2 || cv.length === 3) && (cv.charAt(0)===':' || cv.charAt(0)===';')) {
+      // 3 character string case
+      if (cv.charAt(1)==='-' || cv.charAt(1)==='~') {
+        if (cv.charAt(2)===')' || cv.charAt(2)==='D') {
+          // This is a smiley
+          a++;
+          return a;
+        }
+        // This is not a smiley
+        else {
+        return a;
+        }
+      }
+      // 2 character string case
+      else if (cv.charAt(1)===')' || cv.charAt(1)==='D') {
+        // This is a smiley
+        a++;
+        return a;
+      }
+      // This is not a smiley
+      else {
+        return a;
+      }
+    }
+    // This is not a smiley
+    else {
+      return a;
+    }
+  }
+  
+  // Count up the smileys using the reduce() function and return this number.
+  var count = arr.reduce(pickSmiley, 0);
+  return count;
+}
+
+// Test case: Should return 3.
+var newArr = [';D', ':-(', ':-)', ';~)'];
+countSmileys(newArr);
