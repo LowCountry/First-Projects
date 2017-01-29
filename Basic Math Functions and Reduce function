@@ -1,3 +1,4 @@
+// Greatest Common Denominator Function
 function gcdi(x,y) {
     x = Math.abs(x); y = Math.abs(y);
     var num = mini(x,y);
@@ -8,22 +9,32 @@ function gcdi(x,y) {
     } 
     return gcd;
 }
+
+// Lowest Common Multiple Function
 function lcmu(a, b) {
     a = Math.abs(a); b = Math.abs(b);
     var lcm = (a*b)/gcdi(a,b);
     return lcm;
 }
+
+// Summing function
 function som(a, b) {
     return a+b;
 }
+
+// Function to return the greater of two numbers
 function maxi(a, b) {
     if (a > b) return a;
     else return b;
 }
+
+// Function to return the lesser of two numbers
 function mini(a, b) {
      if (a > b) return b;
     else return a;
 }
+
+// Function to return the result of performing a function over the contents of an array, similar to the Array.prototype.reduce() function
 function operArray(fct, arr, init) {
     var newArr=[];
     for (var i=0; i<arr.length; i++) {
